@@ -1,4 +1,4 @@
-package com.jaga.backend.entity.user;
+package com.jaga.backend.entity;
 
 import lombok.*;
 
@@ -21,7 +21,7 @@ public class User {
 
     private boolean isAdmin;
 
-    
+
 
 
 }
