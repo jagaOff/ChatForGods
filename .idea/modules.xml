@@ -4,6 +4,9 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ChatForGods.iml" filepath="$PROJECT_DIR$/ChatForGods.iml" />
       <module fileurl="file://$PROJECT_DIR$/backend/backend.iml" filepath="$PROJECT_DIR$/backend/backend.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.jaga.backend.iml" filepath="$PROJECT_DIR$/.idea/modules/com.jaga.backend.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.jaga.backend.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.jaga.backend.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.jaga.backend.test.iml" filepath="$PROJECT_DIR$/.idea/modules/com.jaga.backend.test.iml" />
     </modules>
   </component>
 </project>
