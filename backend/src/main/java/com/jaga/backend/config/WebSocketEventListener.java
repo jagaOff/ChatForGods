@@ -24,15 +24,13 @@ public class WebSocketEventListener {
 
         var chatMessage = ChatMessage.builder()
                 .type(MessageType.JOIN)
-                .sender("Server")
-                .content("New user joined")
+                .name("Server")
+                .message("New user joined")
                 .build();
-        // todo handle connect event
         messageTemplate.convertAndSend("/topic/public", chatMessage);
 
 
 
-//        messageTemplate.convertAndSend("/topic/public", "chatMessage");
 
 
     }
@@ -41,7 +39,6 @@ public class WebSocketEventListener {
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
         System.out.println("Disconnected");
 
-        // TODO handle disconnect event
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         String username = (String) headerAccessor.getSessionAttributes().get("username");
 
@@ -49,7 +46,7 @@ public class WebSocketEventListener {
             System.out.println("User Disconnected : " + username);
             var chatMessage = ChatMessage.builder()
                     .type(MessageType.LEAVE)
-                    .sender(username)
+                    .name(username)
                     .build();
             messageTemplate.convertAndSend("/topic/public", chatMessage);
         }

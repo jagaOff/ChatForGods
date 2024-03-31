@@ -1,4 +1,4 @@
-package com.jaga.backend.service;
+package com.jaga.backend.data.service;
 
 public class ChatService {
 

@@ -1,4 +1,4 @@
-package com.jaga.backend.entity;
+package com.jaga.backend.data.entity;
 
 public class Group {
 

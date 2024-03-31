@@ -2,8 +2,7 @@ package com.jaga.backend.chat;
 
 import lombok.*;
 
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -11,8 +10,12 @@ public class ChatMessage {
 
     // message content
 
-    private String content;
-    private String sender;
-    private MessageType type;
+    private String name;
+    private String message;
+    private String date;
+    private String time;
+
+
+    private MessageType type; // message type f ex. JOIN, LEAVE
 
 }
