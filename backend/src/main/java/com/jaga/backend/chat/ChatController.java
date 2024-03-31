@@ -2,6 +2,7 @@ package com.jaga.backend.chat;
 
 import com.jaga.backend.entity.Chat;
 import com.jaga.backend.service.ChatService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,13 +21,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/chats")
 public class ChatController {
 
-    @Autowired
-    private ChatService chatService;
 
     @PostMapping("/create")
     public ResponseEntity<Chat> createChat(@RequestParam Long user1Id, @RequestParam Long user2Id) {
-        Chat chat = chatService.createChat(user1Id, user2Id);
-        return new ResponseEntity<>(chat, HttpStatus.CREATED);
+//        Chat chat = chatService.createChat(user1Id, user2Id);
+//        return new ResponseEntity<>(chat, HttpStatus.CREATED);
+        return new ResponseEntity<>(null);
     }
 
 
@@ -47,7 +47,5 @@ public class ChatController {
         headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
         return chatMessage;
     }
-
-
 
 }

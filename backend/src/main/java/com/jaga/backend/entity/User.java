@@ -1,31 +1,26 @@
 package com.jaga.backend.entity;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
 import lombok.*;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-@Getter
-@Setter
-@Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
+//@Entity
 public class User {
 
-    @Id
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String userName;
 
     private char[] password;
 
-    @ManyToMany(mappedBy = "users")
+//    @ManyToMany(mappedBy = "users")
     private Set<Chat> chats = new HashSet<>();
 
     private boolean isAdmin;
