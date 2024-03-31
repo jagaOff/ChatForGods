@@ -1,7 +1,11 @@
 package com.jaga.backend.entity;
 
+
+import jakarta.persistence.*;
 import lombok.*;
-import java.util.Map;
+
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Getter
@@ -9,12 +13,19 @@ import java.util.Map;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-
+@Entity
 public class Chat {
 
-    private long id;
+    @Id
+    private Long id;
 
-    private Map<Long, Role> userList;
+    @ManyToMany
+    @JoinTable(
+            name = "chat_users",
+            joinColumns = @JoinColumn(name = "chat_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<User> users = new HashSet<>();
 
     private boolean visibility;
 
