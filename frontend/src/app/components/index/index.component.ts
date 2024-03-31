@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {WebsocketService} from "../../services/websocket.service";
 import {FormsModule} from "@angular/forms";
-import {ChatTemplate} from "../../chatSendTemplates/ChatTemplate";
+import {ChatTemplate} from "../../sendTemplates/ChatTemplate";
 
 @Component({
   selector: 'app-index',
@@ -10,7 +10,7 @@ import {ChatTemplate} from "../../chatSendTemplates/ChatTemplate";
     FormsModule
   ],
   templateUrl: './index.component.html',
-  styleUrl: './index.component.css'
+  styleUrl: './index.component.scss'
 })
 export class IndexComponent implements OnInit {
   message!: string;
@@ -26,6 +26,7 @@ export class IndexComponent implements OnInit {
 
   sendMessage() {
     this.webSocketService.sendMessage(
+      '/app/chat.sendMessage',
       new ChatTemplate(this.name, this.message,
         new Date().toLocaleDateString(), new Date().toLocaleTimeString()));
     this.message = '';
@@ -33,7 +34,7 @@ export class IndexComponent implements OnInit {
   }
 
   subscribe() {
-    this.webSocketService.subscribe((message: any) => {
+    this.webSocketService.subscribe('/topic/public', (message: any) => {
       console.log(message.body);
     });
   }

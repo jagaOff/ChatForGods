@@ -1,7 +1,7 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {CompatClient, Stomp, StompSubscription} from '@stomp/stompjs';
 import {WebConfig} from "../config/Web.config";
-import {ChatTemplate} from "../chatSendTemplates/ChatTemplate";
+import {SendTemplate} from "../sendTemplates/sendTemplate";
 
 @Injectable({
   providedIn: 'root'
@@ -29,8 +29,10 @@ export class WebsocketService implements OnDestroy {
   async connectToWebSocket() {
     this.connection = Stomp.client(`ws://${this.wsUrl}`);
     this.connection.connect({}, () => {
-      this.connectionStatus = 'Connected';
     });
+    if (this.connection) {
+      this.connectionStatus = 'Connected';
+    }
   }
 
   closeConnection() {
@@ -39,9 +41,12 @@ export class WebsocketService implements OnDestroy {
     });
   }
 
-  sendMessage(chatTemplate: ChatTemplate) {
+  sendMessage(destination: string, template: SendTemplate) {
     if (this.connection && this.connection.connected) {
-      this.connection.send('/app/chat.sendMessage', {}, JSON.stringify(chatTemplate));
+      console.log('Sending message');
+      this.connection.send(destination, {}, JSON.stringify(template));
+    } else {
+      console.error('Websocket is not connected');
     }
   }
 
@@ -51,10 +56,10 @@ export class WebsocketService implements OnDestroy {
     });
   }*/
 
-  public subscribe(callback: Function): void {
+  public subscribe(destination: string, callback: Function): void {
     if (this.connection) {
       this.connection.connect({}, () => {
-        this.subscription = this.connection!.subscribe('/topic/public', message => {
+        this.subscription = this.connection!.subscribe(destination, message => {
           callback(JSON.parse(message.body))
         });
       });
