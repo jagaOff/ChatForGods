@@ -33,12 +33,17 @@ public class ChatController {
     // end point for sending message
     // each time a message is sent to /app/chat.sendMessage, the sendMessage() method is called
     // the message is then broadcast to all subscribers of /topic/public
-    @MessageMapping("/chat.sendMessage")
+    @MessageMapping("/chat.sendMessage") // listens to chats/chat.sendMessage
     @SendTo("/topic/public")
-    public ChatMessage sendMessage(@Payload ChatMessage chatMessage) {
 
-        return chatMessage;
+    public void sendMessage(@Payload String message) {
+        System.out.println("Message sent: " + message);
     }
+/*    public ChatMessage sendMessage(@Payload ChatMessage chatMessage) {
+
+        System.out.println("Message sent: " + chatMessage.getContent());
+        return chatMessage;
+    }*/
 
     // Add username to the chatMessage
     @MessageMapping("/chat.addUser")
@@ -47,5 +52,9 @@ public class ChatController {
         headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
         return chatMessage;
     }
+
+    // todo передавать server.address вместо undefined
+
+
 
 }

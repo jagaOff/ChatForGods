@@ -8,6 +8,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.messaging.SessionConnectEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 @Component
@@ -18,7 +19,28 @@ public class WebSocketEventListener {
     private final SimpMessageSendingOperations messageTemplate;
 
     @EventListener
+    public void handleWebSocketConnectListener(SessionConnectEvent event) {
+        System.out.println("Connected");
+
+        var chatMessage = ChatMessage.builder()
+                .type(MessageType.JOIN)
+                .sender("Server")
+                .content("New user joined")
+                .build();
+        // todo handle connect event
+        messageTemplate.convertAndSend("/topic/public", chatMessage);
+
+
+
+//        messageTemplate.convertAndSend("/topic/public", "chatMessage");
+
+
+    }
+
+    @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
+        System.out.println("Disconnected");
+
         // TODO handle disconnect event
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         String username = (String) headerAccessor.getSessionAttributes().get("username");
@@ -33,5 +55,7 @@ public class WebSocketEventListener {
         }
 
     }
+
+
 
 }
