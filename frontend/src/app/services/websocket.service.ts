@@ -27,11 +27,20 @@ export class WebsocketService implements OnDestroy {
   }
 
   async connectToWebSocket() {
-    this.connection = Stomp.client(`ws://${this.wsUrl}`);
+    var webSocket = new WebSocket(`ws://${this.wsUrl}`);
+    this.connection = Stomp.over(webSocket);
+    // this.connection = Stomp.client(`ws://${this.wsUrl}`);
+
     this.connection.connect({}, () => {
+
     });
-    if (this.connection) {
+
+    if (this.connection?.connected) {
+      console.log('Connected to websocket');
       this.connectionStatus = 'Connected';
+    } else {
+      console.error('Could not connect to websocket');
+      this.connectionStatus = 'Could not connect to websocket';
     }
   }
 
