@@ -80,6 +80,8 @@ export class IndexComponent implements OnInit {
     console.log("Connecting to websocket index");
     this.webSocketService.connectToWebSocket().then(() => {
       this.subscribe();
+    }, (error) => {
+      console.error("Connection failed");
     });
 
   }
