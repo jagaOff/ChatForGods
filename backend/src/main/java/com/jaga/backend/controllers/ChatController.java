@@ -1,5 +1,6 @@
 package com.jaga.backend.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jaga.backend.chat.ChatMessage;
 import com.jaga.backend.chat.MessageType;
 import com.jaga.backend.data.entity.Chat;
@@ -16,6 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 @Controller
 @RestController
 @RequestMapping("/chats")
@@ -23,6 +27,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class ChatController {
 
     private final SimpMessageSendingOperations messageTemplate;
+
+    private ArrayList<ChatMessage> chats = new ArrayList<>();
 
 
     @PostMapping("/create")
@@ -36,14 +42,14 @@ public class ChatController {
     // the message is then broadcast to all subscribers of /topic/public
     @MessageMapping("/chat.sendMessage") // listens to chats/chat.sendMessage
     @SendTo("/topic/public")
-    public void sendMessage(@Payload ChatMessage message) {
+    public void sendMessage(@Payload ChatMessage message) throws Exception{
 
-        System.out.println("Message sent: " + message.toString());
-        var msg = ChatMessage.builder()
-                .type(MessageType.CHAT)
-                .name("Server")
-                .build();
+        chats.add(message);
 
+        ObjectMapper mapper = new ObjectMapper();
+
+
+        messageTemplate.convertAndSend("/topic/public", mapper.writeValueAsString(chats));
     }
 
     // Add username to the chatMessage

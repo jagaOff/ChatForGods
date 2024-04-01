@@ -16,6 +16,6 @@ public class ChatMessage {
     private String time;
 
 
-    private MessageType type; // message type f ex. JOIN, LEAVE
+    private MessageType type; // message type -> for example JOIN, LEAVE
 
 }

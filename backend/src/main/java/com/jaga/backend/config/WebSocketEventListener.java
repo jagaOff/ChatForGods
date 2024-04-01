@@ -49,16 +49,16 @@ public class WebSocketEventListener {
                 String username = String.valueOf(jwtService.extractAllClaims(userToken));
                 System.out.println("User connected : " + username);
 
-                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>());
-                System.out.println("Guest connected : " + username);
+
             } else {
                 // token is invalid
                 System.out.println("Invalid token");
                 throw new RuntimeException("Invalid token");
             }
         } else {
-            // token is invalid
-            System.out.println("Guest connected");
+            String username = String.valueOf(jwtService.extractAllClaims(userToken));
+            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>());
+            System.out.println("Guest connected : " + username);
         }
 
 
@@ -87,7 +87,6 @@ public class WebSocketEventListener {
         }*/
         //guest-wdijwoidjaw
 
-        System.out.println("Connected");
         System.out.println("Event message : " + event.getMessage() + "//// " + "Event user : " + event.getUser());
 
         var chatMessage = ChatMessage.builder()
