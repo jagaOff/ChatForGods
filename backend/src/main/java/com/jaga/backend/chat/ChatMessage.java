@@ -1,6 +1,7 @@
 package com.jaga.backend.chat;
 
 import lombok.*;
+import org.springframework.http.HttpStatus;
 
 @Data
 @AllArgsConstructor
