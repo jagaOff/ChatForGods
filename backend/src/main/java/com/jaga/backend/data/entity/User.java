@@ -16,6 +16,7 @@ public class User {
     @Setter(value = AccessLevel.NONE)
     private Long id;
 
+    @Column(unique = true)
     private String username;
 
     private char[] password;

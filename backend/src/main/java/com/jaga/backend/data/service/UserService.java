@@ -1,9 +1,12 @@
 package com.jaga.backend.data.service;
 
+import com.jaga.backend.data.dto.ErrorDto;
 import com.jaga.backend.data.entity.User;
 import com.jaga.backend.data.repositories.UserRepository;
+import com.jaga.backend.error.ExceptionHandler;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -14,29 +17,32 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final MessageSendingService messageSendingService;
     // todo private final PasswordEncoder passwordEncoder;
 
     public User registerUser(User user) throws Exception{
         if (getUserByUsername(user.getUsername()).isPresent()) {
-            // todo переделать ошибку с выводом в фронтенд
-            throw new IllegalAccessException("User already exists");
+            messageSendingService.sendError(new ErrorDto("User already exists", "/topic/auth", HttpStatus.BAD_REQUEST.value()));
         }
 
         return userRepository.save(user);
     }
 
-
     public User loginUser(String username, char[] password) throws Exception {
-        User user = userRepository.findByUsername(username).orElseThrow();
+        Optional<User> user = userRepository.findByUsername(username);
 
-        if (!Arrays.toString(user.getPassword()).equals(Arrays.toString(password))) {
-            throw new IllegalAccessException("Incorrect password");
+        // If user is not found, send error message
+        if(!user.isPresent()) {
+            messageSendingService.sendError(new ErrorDto("User not found", "/topic/auth", HttpStatus.NOT_FOUND.value()));
         }
 
-        return user;
-    }
+        // If password is incorrect, send error message
+        if (!Arrays.toString(user.get().getPassword()).equals(Arrays.toString(password))) {
+            messageSendingService.sendError(new ErrorDto("Incorrect password", "/topic/auth", HttpStatus.UNAUTHORIZED.value()));
+        }
 
-    
+        return user.get();
+    }
 
     public Optional<User> getUserById(Long id) {
         return userRepository.findById(id);
