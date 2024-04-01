@@ -4,6 +4,9 @@ import {WebsocketService} from '../../services/websocket.service';
 import {ChatTemplate} from "../../sendTemplates/ChatTemplate";
 import {AuthTemplate} from "../../sendTemplates/auth/AuthTemplate";
 import {FormsModule} from "@angular/forms";
+import {UserConfig} from "../../config/User.config";
+import {Router} from "@angular/router";
+import {routes} from "../../app.routes";
 
 @Component({
   selector: 'app-auth',
@@ -21,15 +24,33 @@ export class AuthComponent {
   password = '';
   passwordRep = '';
 
-  constructor(protected webSocketService: WebsocketService) {
+  constructor(protected webSocketService: WebsocketService,
+              private userConfig: UserConfig,
+              private router: Router) {
     webSocketService.connectToWebSocket().then(r => {
+      console.log("Connected to WebSocket auth");
       this.subscribe()
     });
   }
 
   subscribe(){
     this.webSocketService.subscribe('/topic/auth', (message: any) => {
-      console.log(message.body);
+      console.log(message);
+
+      switch (message.status){
+        case 200:{
+          this.webSocketService.headers['user_token'] = message.token;
+          let config = this.userConfig.getUserConfig();
+          config.user_token = message.token;
+          config.username = message.username;
+          this.userConfig.updateUserConfig(config);
+
+          //navigate to "/"
+          this.router.navigate(['']);
+
+          break;
+        }
+      }
     });
   }
 

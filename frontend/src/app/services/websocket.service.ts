@@ -1,7 +1,8 @@
 import {Injectable, OnDestroy} from '@angular/core';
-import {CompatClient, Stomp, StompSubscription} from '@stomp/stompjs';
+import {CompatClient, Stomp, StompHeaders, StompSubscription} from '@stomp/stompjs';
 import {WebConfig} from "../config/Web.config";
 import {SendTemplate} from "../sendTemplates/sendTemplate";
+import {UserConfig} from "../config/User.config";
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,19 @@ export class WebsocketService implements OnDestroy {
 
   private subscription: StompSubscription | undefined;
 
-  constructor() {
+  headers: StompHeaders = {
+    user_token: "",
+  }
+
+  constructor(private userConfig: UserConfig) {
+
+    if(this.userConfig.getUserConfig().user_token == ""){
+      this.headers['user_token'] = "guest-" + Math.random().toString(36).substr(2, 9);
+    } else {
+      this.headers['user_token'] = this.userConfig.getUserConfig().user_token;
+    }
+
+
     /*this.connection = Stomp.client(`ws://${this.wsUrl}`);
     this.connection.connect({}, () => {
     });*/
@@ -28,7 +41,7 @@ export class WebsocketService implements OnDestroy {
 
   async connectToWebSocket() {
     this.connection = Stomp.client(`ws://${this.wsUrl}`);
-    this.connection.connect({}, () => {
+    this.connection.connect(this.headers, () => {
     });
     if (this.connection) {
       this.connectionStatus = 'Connected';
@@ -60,7 +73,7 @@ export class WebsocketService implements OnDestroy {
     if (this.connection) {
       this.connection.connect({}, () => {
         this.subscription = this.connection!.subscribe(destination, message => {
-          callback(JSON.parse(message.body))
+          callback(JSON.parse(message.body));
         });
       });
     }

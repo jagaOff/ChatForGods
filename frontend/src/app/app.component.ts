@@ -1,5 +1,7 @@
-import {Component, ErrorHandler} from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import {Component} from '@angular/core';
+import {RouterOutlet} from '@angular/router';
+import {UserConfig} from "./config/User.config";
+import {ThemeConfig} from './config/Theme.config';
 
 @Component({
   selector: 'app-root',
@@ -11,7 +13,15 @@ import { RouterOutlet } from '@angular/router';
 export class AppComponent {
   title = 'frontend';
 
-  constructor() {
-    console.log('AppComponent created');
+
+  constructor(private userConfig: UserConfig, private themeConfig: ThemeConfig) {
+
+    // if userConfig.getUserConfig() is empty, create a new one
+    if (Object.keys(userConfig.getUserConfig()).length === 0) {
+      userConfig.createUserConfig();
+    }
+
+    // themeConfig.changeTheme("dark")
+    themeConfig.applyTheme();
   }
 }

@@ -11,7 +11,13 @@
 
 <br>
 <div>
-  <input type="text" [(ngModel)]="name" placeholder="Enter name" [disabled]="isNameDisabled">
+<!--  <input type="text" [(ngModel)]="name" placeholder="Enter name" [disabled]="isNameDisabled">-->
   <input type="text" [(ngModel)]="message" placeholder="Enter message">
   <button (click)="sendMessage()">Send</button>
+
+
+</div>
+
+<div *ngFor="let message of messages">
+  {{message.name}} : {{message.message}} - <span>{{message.date}}:{{message.time}}</span>
 </div>
