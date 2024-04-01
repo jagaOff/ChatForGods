@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
+import java.util.HashMap;
+
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -27,11 +29,9 @@ public class WebSocketEventListener {
                 .name("Server")
                 .message("New user joined")
                 .build();
-        messageTemplate.convertAndSend("/topic/public", chatMessage);
-
-
-
-
+        var headers = new HashMap<String,Object>();
+        headers.put("username", "Server");
+        messageTemplate.convertAndSend("/topic/public", chatMessage, headers);
 
     }
 

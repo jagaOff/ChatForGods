@@ -1,9 +1,12 @@
 package com.jaga.backend.data.service;
 
+import com.jaga.backend.data.dto.ErrorDto;
 import com.jaga.backend.data.entity.User;
 import com.jaga.backend.data.repositories.UserRepository;
+import com.jaga.backend.error.ExceptionHandler;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -14,12 +17,13 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final MessageSendingService messageSendingService;
     // todo private final PasswordEncoder passwordEncoder;
 
     public User registerUser(User user) throws Exception{
         if (getUserByUsername(user.getUsername()).isPresent()) {
-            // todo переделать ошибку с выводом в фронтенд
-            throw new IllegalAccessException("User already exists");
+            messageSendingService.sendError(new ErrorDto("User already exists", "/topic/auth", HttpStatus.BAD_REQUEST));
+
         }
 
         return userRepository.save(user);
@@ -30,7 +34,7 @@ public class UserService {
         User user = userRepository.findByUsername(username).orElseThrow();
 
         if (!Arrays.toString(user.getPassword()).equals(Arrays.toString(password))) {
-            throw new IllegalAccessException("Incorrect password");
+            messageSendingService.sendError(new ErrorDto("Incorrect password", "/topic/auth", HttpStatus.BAD_REQUEST));
         }
 
         return user;

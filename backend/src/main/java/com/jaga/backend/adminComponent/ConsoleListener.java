@@ -1,5 +1,6 @@
 package com.jaga.backend.adminComponent;
 
+import com.jaga.backend.data.service.MessageSendingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
