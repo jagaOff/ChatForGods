@@ -22,25 +22,27 @@ public class UserService {
 
     public User registerUser(User user) throws Exception{
         if (getUserByUsername(user.getUsername()).isPresent()) {
-            messageSendingService.sendError(new ErrorDto("User already exists", "/topic/auth", HttpStatus.BAD_REQUEST));
-
+            messageSendingService.sendError(new ErrorDto("User already exists", "/topic/auth", HttpStatus.BAD_REQUEST.value()));
         }
 
         return userRepository.save(user);
     }
 
-
     public User loginUser(String username, char[] password) throws Exception {
-        User user = userRepository.findByUsername(username).orElseThrow();
+        Optional<User> user = userRepository.findByUsername(username);
 
-        if (!Arrays.toString(user.getPassword()).equals(Arrays.toString(password))) {
-            messageSendingService.sendError(new ErrorDto("Incorrect password", "/topic/auth", HttpStatus.BAD_REQUEST));
+        // If user is not found, send error message
+        if(!user.isPresent()) {
+            messageSendingService.sendError(new ErrorDto("User not found", "/topic/auth", HttpStatus.NOT_FOUND.value()));
         }
 
-        return user;
-    }
+        // If password is incorrect, send error message
+        if (!Arrays.toString(user.get().getPassword()).equals(Arrays.toString(password))) {
+            messageSendingService.sendError(new ErrorDto("Incorrect password", "/topic/auth", HttpStatus.UNAUTHORIZED.value()));
+        }
 
-    
+        return user.get();
+    }
 
     public Optional<User> getUserById(Long id) {
         return userRepository.findById(id);
