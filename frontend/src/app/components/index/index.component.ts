@@ -42,6 +42,8 @@ export class IndexComponent implements OnInit {
   async connect() {
     this.webSocketService.connectToWebSocket().then(() => {
       this.subscribe();
+    }, (error) => {
+      console.error("Connection failed");
     });
 
   }
