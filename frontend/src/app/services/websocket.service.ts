@@ -16,6 +16,9 @@ export class WebsocketService implements OnDestroy {
   private wsUrl = WebConfig.websocketUrl;
   private connection: CompatClient | undefined = undefined;
   private subscription: StompSubscription | undefined;
+  private timeOut = 5000;
+  private connectionAttempts = 0;
+  private maxConnectionAttempts = 5;
 
   constructor(private userConfig: UserConfig, private toast: ToastService) {
 
@@ -40,17 +43,27 @@ export class WebsocketService implements OnDestroy {
   async connectToWebSocket() {
     this.connection = Stomp.client(`ws://${this.wsUrl}`);
     this.connection.connect(this.headers, () => {
+
     });
 
     if (this.connection?.connected) {
-      console.log('Connected to websocket');
+      this.connectionAttempts = 0;
       this.connectionStatus = 'Connected';
       this.toast.show("success", 'Connected to websocket', {
         closeButton: true,
         timeOut: 3000,
       });
     } else {
-      console.error('Could not connect to websocket');
+      this.reconnect();
+    }
+  }
+
+  private reconnect() {
+    this.connectionAttempts++;
+    if (this.connectionAttempts < this.maxConnectionAttempts) {
+      console.log("trying to connect to websocket: " + this.connectionAttempts);
+      setTimeout(() => this.connectToWebSocket(), this.timeOut);
+    } else {
       this.connectionStatus = 'Could not connect to websocket';
       this.toast.show("error", 'Could not connect to websocket', {
         closeButton: true,
@@ -62,6 +75,11 @@ export class WebsocketService implements OnDestroy {
   closeConnection() {
     this.connection?.disconnect(() => {
       this.connectionStatus = 'Disconnected';
+      this.toast.show("info", 'Disconnected from websocket', {
+        closeButton: true,
+        timeOut: 3000,
+      });
+      this.reconnect();
     });
   }
 
