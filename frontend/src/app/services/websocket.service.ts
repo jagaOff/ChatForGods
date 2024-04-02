@@ -28,7 +28,11 @@ export class WebsocketService implements OnDestroy {
       this.headers['user_token'] = this.userConfig.getUserConfig().user_token;
     }
 
-
+    (window as any).web = {
+      connect: this.connectToWebSocket.bind(this),
+      disconnect: this.closeConnection.bind(this),
+      setAttempt: this.setAttempt.bind(this),
+    };
     /*this.connection = Stomp.client(`ws://${this.wsUrl}`);
     this.connection.connect({}, () => {
     });*/
@@ -70,6 +74,10 @@ export class WebsocketService implements OnDestroy {
         timeOut: 3000,
       });
     }
+  }
+
+  setAttempt(attempt: number) {
+    this.connectionAttempts = attempt;
   }
 
   closeConnection() {
