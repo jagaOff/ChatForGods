@@ -3,25 +3,23 @@ import {CompatClient, Stomp, StompHeaders, StompSubscription} from '@stomp/stomp
 import {WebConfig} from "../config/Web.config";
 import {SendTemplate} from "../sendTemplates/sendTemplate";
 import {UserConfig} from "../config/User.config";
+import {ToastService} from './toast.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WebsocketService implements OnDestroy {
   connectionStatus!: string;
-  private wsUrl = WebConfig.websocketUrl;
-
-  private connection: CompatClient | undefined = undefined;
-
-  private subscription: StompSubscription | undefined;
-
   headers: StompHeaders = {
     user_token: "",
   }
+  private wsUrl = WebConfig.websocketUrl;
+  private connection: CompatClient | undefined = undefined;
+  private subscription: StompSubscription | undefined;
 
-  constructor(private userConfig: UserConfig) {
+  constructor(private userConfig: UserConfig, private toast: ToastService) {
 
-    if(this.userConfig.getUserConfig().user_token == ""){
+    if (this.userConfig.getUserConfig().user_token == "") {
       this.headers['user_token'] = "guest-" + Math.random().toString(36).substr(2, 9);
     } else {
       this.headers['user_token'] = this.userConfig.getUserConfig().user_token;
@@ -43,8 +41,21 @@ export class WebsocketService implements OnDestroy {
     this.connection = Stomp.client(`ws://${this.wsUrl}`);
     this.connection.connect(this.headers, () => {
     });
-    if (this.connection) {
+
+    if (this.connection?.connected) {
+      console.log('Connected to websocket');
       this.connectionStatus = 'Connected';
+      this.toast.show("success", 'Connected to websocket', {
+        closeButton: true,
+        timeOut: 3000,
+      });
+    } else {
+      console.error('Could not connect to websocket');
+      this.connectionStatus = 'Could not connect to websocket';
+      this.toast.show("error", 'Could not connect to websocket', {
+        closeButton: true,
+        timeOut: 3000,
+      });
     }
   }
 

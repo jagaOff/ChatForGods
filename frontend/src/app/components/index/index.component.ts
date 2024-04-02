@@ -55,6 +55,8 @@ export class IndexComponent implements OnInit {
       const msg = JSON.stringify(message);
       const parsed = JSON.parse(msg);
 
+      this.messages = [];
+
       if(Array.isArray(parsed)){
         parsed.forEach((message: any) => {
           this.messages.push(new ChatTemplate(message.name, message.message, message.date, message.time));
