@@ -30,5 +30,8 @@
 
 .toast-message{
   word-wrap: break-word;
+}
+
+.toast-progress .toast-message{
   max-width: 200px;
 }
