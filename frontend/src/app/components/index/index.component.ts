@@ -5,6 +5,8 @@ import {ChatTemplate} from "../../sendTemplates/ChatTemplate";
 import {UserConfig} from "../../config/User.config";
 import {Router} from "@angular/router";
 import {NgForOf} from "@angular/common";
+import {ThemeConfig} from '../../config/Theme.config';
+import {ToastService} from '../../services/toast.service';
 
 @Component({
   selector: 'app-index',
@@ -20,10 +22,12 @@ export class IndexComponent implements OnInit {
   message!: string;
   name!: string;
   isNameDisabled = false;
-  messages: ChatTemplate[]= [];
+  messages: ChatTemplate[] = [];
 
   constructor(protected webSocketService: WebsocketService,
               private userConfig: UserConfig,
+              private themeConfig: ThemeConfig,
+              private toast: ToastService,
               private router: Router) {
     if (this.userConfig.getUserConfig().user_token == "") {
       console.log("no token")
@@ -57,12 +61,11 @@ export class IndexComponent implements OnInit {
 
       this.messages = [];
 
-      if(Array.isArray(parsed)){
+      if (Array.isArray(parsed)) {
         parsed.forEach((message: any) => {
           this.messages.push(new ChatTemplate(message.name, message.message, message.date, message.time));
         });
       }
-
 
 
       // message.forEach((message: any) => {
@@ -88,5 +91,16 @@ export class IndexComponent implements OnInit {
 
   disconnect() {
     this.webSocketService.closeConnection();
+  }
+
+  changeTheme() {
+    this.themeConfig.changeTheme(this.userConfig.getUserConfig().theme == "light" ? "dark" : "light");
+  }
+
+  addToast() {
+    this.toast.show("success", "This is a success message", {
+      closeButton: true,
+      timeOut: 5000,
+    })
   }
 }

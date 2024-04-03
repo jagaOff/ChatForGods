@@ -2,10 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+.toast-container{
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+}
 
 .toast {
-  position: fixed;
+  //position: fixed;
   z-index: 9999;
+  margin-bottom: 10px;
+  align-items: flex-end;
 }
 
 .toast-top-right {
@@ -28,10 +35,10 @@
   left: 1rem;
 }
 
-.toast-message{
+.toast-message {
   word-wrap: break-word;
 }
 
-.toast-progress .toast-message{
+.toast-progress .toast-message {
   max-width: 200px;
 }

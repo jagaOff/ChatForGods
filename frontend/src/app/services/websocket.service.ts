@@ -56,14 +56,14 @@ export class WebsocketService implements OnDestroy {
     if (this.connection?.connected) {
       this.connectionAttempts = 0;
       this.connectionStatus = 'Connected';
-      this.toast.show("success", 'Connected to websocket', {
+      this.toast.show("success", 'Connected to server', {
         closeButton: true,
         timeOut: 3000,
       });
     } else {
       if (!this.closeReconnect) {
         this.closeReconnectNotification()
-        this.toast.show("info", "Trying to connect to websocket", {
+        this.toast.show("info", "Trying connect to server", {
           isClosable: false,
           customIcon: '<img src="assets/img/svg/loading.svg" alt="Star Icon" />',
         });
@@ -92,7 +92,7 @@ export class WebsocketService implements OnDestroy {
       console.log('Sending message');
       this.connection.send(destination, {}, JSON.stringify(template));
     } else {
-      console.error('Websocket is not connected');
+      console.error('Server is not connected');
     }
   }
 

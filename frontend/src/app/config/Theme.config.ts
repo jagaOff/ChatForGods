@@ -7,7 +7,9 @@ import {Injectable} from "@angular/core";
 export class ThemeConfig {
 
   constructor(private userConfig: UserConfig) {
-
+    (window as any).theme = {
+      devToken: () => this.setDevToken(),
+    };
   }
 
   applyTheme() {
@@ -19,9 +21,15 @@ export class ThemeConfig {
   }
 
   changeTheme(theme: string) {
-    let config = this.userConfig.getDefaultConfig();
+    let config = this.userConfig.getUserConfig();
     config.theme = theme;
     this.userConfig.updateUserConfig(config);
     this.applyTheme();
+  }
+
+  setDevToken(){
+    let config = this.userConfig.getUserConfig();
+    config.user_token = "guest-" + Math.random().toString(36);
+    this.userConfig.updateUserConfig(config);
   }
 }
