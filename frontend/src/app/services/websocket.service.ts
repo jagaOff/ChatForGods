@@ -56,20 +56,24 @@ export class WebsocketService implements OnDestroy {
     if (this.connection?.connected) {
       this.connectionAttempts = 0;
       this.connectionStatus = 'Connected';
+      this.closeReconnectNotification();
       this.toast.show("success", 'Connected to server', {
         closeButton: true,
         timeOut: 3000,
       });
-    } else {
+    }
+
+    /*else {
       if (!this.closeReconnect) {
         this.closeReconnectNotification()
         this.toast.show("info", "Trying connect to server", {
           isClosable: false,
           customIcon: '<img src="assets/img/svg/loading.svg" alt="Star Icon" />',
+          timeOut: 3000
         });
-        this.reconnect();
+        // this.reconnect();
       }
-    }
+    }*/
   }
 
   setAttempt(attempt: number) {
@@ -123,15 +127,20 @@ export class WebsocketService implements OnDestroy {
   private reconnect() {
     this.connectionAttempts++;
 
+    if(this.connectionStatus === 'Connected'){
+      this.closeReconnect = true;
+      return;
+    }
+
 
     if (this.connectionAttempts <= this.maxConnectionAttempts) {
-      console.log("trying to connect to websocket: " + this.connectionAttempts);
+      console.log("trying to connect to server: " + this.connectionAttempts);
       setTimeout(() => this.connectToWebSocket(), this.timeOut);
     } else {
       this.closeReconnectNotification()
       this.closeReconnect = true;
-      this.connectionStatus = 'Could not connect to websocket';
-      this.toast.show("error", 'Could not connect to websocket', {
+      this.connectionStatus = 'Could not connect to server';
+      this.toast.show("error", 'Could not connect to server', {
         closeButton: true,
         timeOut: 3000,
       });

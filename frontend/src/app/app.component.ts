@@ -17,7 +17,11 @@ export class AppComponent {
   constructor(private userConfig: UserConfig, private themeConfig: ThemeConfig) {
 
     // if userConfig.getUserConfig() is empty, create a new one
-    if (Object.keys(userConfig.getUserConfig()).length === 0) {
+   /* if (Object.keys(userConfig.getUserConfig()).length === 0) {
+      userConfig.createUserConfig();
+    }*/
+
+    if(userConfig.getUserConfig() === null) {
       userConfig.createUserConfig();
     }
 

@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, HostListener, OnInit} from '@angular/core';
 import {WebsocketService} from "../../services/websocket.service";
 import {FormsModule} from "@angular/forms";
 import {ChatTemplate} from "../../sendTemplates/ChatTemplate";
@@ -7,21 +7,20 @@ import {Router} from "@angular/router";
 import {NgForOf} from "@angular/common";
 import {ThemeConfig} from '../../config/Theme.config';
 import {ToastService} from '../../services/toast.service';
+import {LeftIndexComponent} from "../left-index/left-index.component";
 
 @Component({
   selector: 'app-index',
   standalone: true,
   imports: [
     FormsModule,
-    NgForOf
+    NgForOf,
+    LeftIndexComponent,
   ],
   templateUrl: './index.component.html',
   styleUrl: './index.component.scss'
 })
 export class IndexComponent implements OnInit {
-  message!: string;
-  name!: string;
-  isNameDisabled = false;
   messages: ChatTemplate[] = [];
 
   constructor(protected webSocketService: WebsocketService,
@@ -30,13 +29,17 @@ export class IndexComponent implements OnInit {
               private toast: ToastService,
               private router: Router) {
     if (this.userConfig.getUserConfig().user_token == "") {
-      console.log("no token")
       this.router.navigate(['auth']);
     }
 
-    this.name = this.userConfig.getUserConfig().username;
+    this.webSocketService.connectToWebSocket().then(() => {
+      this.subscribe();
+    });
 
-    this.connect();
+    // this.name = this.userConfig.getUserConfig().username;
+    this.themeConfig.changeTheme(this.userConfig.getUserConfig().theme);
+
+
   }
 
   ngOnInit() {
@@ -45,12 +48,10 @@ export class IndexComponent implements OnInit {
   }
 
   sendMessage() {
-    this.webSocketService.sendMessage(
-      '/app/chat.sendMessage',
-      new ChatTemplate(this.name, this.message,
-        new Date().toLocaleDateString(), new Date().toLocaleTimeString()));
-    this.message = '';
-    this.isNameDisabled = true;
+    // this.webSocketService.sendMessage(
+    //   '/app/chat.sendMessage',
+    //   new ChatTemplate(this.name, this.message,
+    //     new Date().toLocaleDateString(), new Date().toLocaleTimeString()));
   }
 
   subscribe() {
@@ -66,41 +67,9 @@ export class IndexComponent implements OnInit {
           this.messages.push(new ChatTemplate(message.name, message.message, message.date, message.time));
         });
       }
-
-
-      // message.forEach((message: any) => {
-      //   message = JSON.stringify(message);
-      //   this.messages.push(new ChatTemplate(message.username, message.message, message.date, message.time));
-      //
-      // });
-
-      // console.log("Message received: " + this.messages);
-      // this.messages.push(new ChatTemplate(message.username, message.message, message.date, message.time));
-
-
     });
   }
 
-  async connect() {
-    console.log("Connecting to websocket index");
-    this.webSocketService.connectToWebSocket().then(() => {
-      this.subscribe();
-    });
 
-  }
 
-  disconnect() {
-    this.webSocketService.closeConnection();
-  }
-
-  changeTheme() {
-    this.themeConfig.changeTheme(this.userConfig.getUserConfig().theme == "light" ? "dark" : "light");
-  }
-
-  addToast() {
-    this.toast.show("success", "This is a success message", {
-      closeButton: true,
-      timeOut: 5000,
-    })
-  }
 }

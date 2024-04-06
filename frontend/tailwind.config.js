@@ -20,8 +20,9 @@ module.exports = {
         'brand': '#F3F3F3',
       },
       dark: {
-        'primary': 'steelblue',
-        'secondary': 'darkblue',
+        'primary': '#8774E1',
+        'secondary': '#2b2d30',
+        'secondary-800': '#AAAAAA',
         'background': '#212121',
         'text': '#FFFFFF',
         'brand': '#1A1A1A',

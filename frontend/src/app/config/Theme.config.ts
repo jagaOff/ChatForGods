@@ -12,23 +12,26 @@ export class ThemeConfig {
     };
   }
 
-  applyTheme() {
-    document.body.setAttribute('data-theme', this.getTheme());
+  async applyTheme() {
+    const theme = await this.getTheme();
+    document.body.setAttribute('data-theme', theme);
   }
 
-  getTheme() {
-    return this.userConfig.getUserConfig().theme;
+  async getTheme() {
+    const config = await this.userConfig.getUserConfig();
+    return config.theme;
   }
 
-  changeTheme(theme: string) {
-    let config = this.userConfig.getUserConfig();
+  async changeTheme(theme: string) {
+    let config = await this.userConfig.getUserConfig();
     config.theme = theme;
     this.userConfig.updateUserConfig(config);
     this.applyTheme();
   }
 
-  setDevToken(){
-    let config = this.userConfig.getUserConfig();
+
+  async setDevToken() {
+    let config = await this.userConfig.getUserConfig();
     config.user_token = "guest-" + Math.random().toString(36);
     this.userConfig.updateUserConfig(config);
   }

@@ -7,6 +7,7 @@ import {FormsModule} from "@angular/forms";
 import {UserConfig} from "../../config/User.config";
 import {Router} from "@angular/router";
 import {routes} from "../../app.routes";
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-auth',
@@ -26,6 +27,7 @@ export class AuthComponent {
 
   constructor(protected webSocketService: WebsocketService,
               private userConfig: UserConfig,
+              private toast: ToastService,
               private router: Router) {
     webSocketService.connectToWebSocket().then(r => {
       console.log("Connected to WebSocket auth");
@@ -35,21 +37,30 @@ export class AuthComponent {
 
   subscribe(){
     this.webSocketService.subscribe('/topic/auth', (message: any) => {
-      console.log(message);
 
-      switch (message.status){
-        case 200:{
-          this.webSocketService.headers['user_token'] = message.token;
-          let config = this.userConfig.getUserConfig();
-          config.user_token = message.token;
-          config.username = message.username;
-          this.userConfig.updateUserConfig(config);
+      if(message.status >= 200 && message.status <= 300){
+        this.webSocketService.headers['user_token'] = message.token;
+        let config = this.userConfig.getUserConfig();
+        config.user_token = message.token;
+        config.username = message.username;
+        this.userConfig.updateUserConfig(config);
+        this.toast.show("success", "Successfully logged in", {
+          timeOut: 3000,
+          closeButton: true
+        });
 
-          //navigate to "/"
-          this.router.navigate(['']);
+        console.log("Successfully logged in");
 
-          break;
-        }
+        this.webSocketService.closeConnection();
+        //navigate to "/"
+        this.router.navigate(['']);
+      }
+
+      if(message.status >= 400 && message.status <= 500){
+        this.toast.show("error", message.message, {
+          timeOut: 3000,
+          closeButton: true
+        });
       }
     });
   }
@@ -57,7 +68,7 @@ export class AuthComponent {
   login() {
 
     if(this.username === '' || this.password === ''){
-      //TODO: show error message
+      this.toast.show("error", "Username or password is empty");
 
       return;
     }
@@ -69,10 +80,9 @@ export class AuthComponent {
 
   register() {
     if(this.username === '' || this.password === '' || this.password !== this.passwordRep){
-
+      this.toast.show("error", "Username or password is empty");
       return;
     }
-
 
     this.webSocketService.sendMessage(
       '/app/auth/register',
