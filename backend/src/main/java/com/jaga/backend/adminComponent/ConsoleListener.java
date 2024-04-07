@@ -25,7 +25,7 @@ public class ConsoleListener implements CommandLineRunner {
                 // Парсим введенную строку, чтобы извлечь сообщение и, возможно, destination
                 String[] parts = input.split("\\s+", 3); // Разделяем строку на части
                 String message = parts.length > 1 ? parts[1] : "";
-                String destination = parts.length > 2 ? parts[2] : "/topic/public"; // destination по умолчанию
+                String destination = parts.length > 2 ? parts[2] : "/asd"; // destination по умолчанию
 
                 if (destination.startsWith("?")) {
                     // Убираем '?' из destination

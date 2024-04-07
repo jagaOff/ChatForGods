@@ -1,9 +1,9 @@
 package com.jaga.backend.data.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.jaga.backend.data.dto.ErrorDto;
 import com.jaga.backend.data.dto.LoginSuccessDto;
+import com.jaga.backend.data.dto.MessageDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -21,11 +21,14 @@ public class MessageSendingService {
         messagingTemplate.convertAndSend(destination, message); // или chatMessage, если используете объект сообщения
     }
 
-    public void sendMessage(LoginSuccessDto loginSuccessDto) throws Exception{
-
-
+    public void sendLoginMessage(LoginSuccessDto loginSuccessDto) throws Exception{
 
         messagingTemplate.convertAndSend(loginSuccessDto.destination(), mapper.writeValueAsString(loginSuccessDto));
+    }
+
+    public void sendMessage(MessageDto messageDto) throws Exception{
+
+        messagingTemplate.convertAndSend(messageDto.destination(), mapper.writeValueAsString(messageDto));
     }
 
     public void sendError(ErrorDto errorDto) throws Exception{
