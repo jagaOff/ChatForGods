@@ -23,13 +23,12 @@ public class MessageSendingService {
 
     public void sendMessage(LoginSuccessDto loginSuccessDto) throws Exception{
 
-
-
         messagingTemplate.convertAndSend(loginSuccessDto.destination(), mapper.writeValueAsString(loginSuccessDto));
     }
 
     public void sendError(ErrorDto errorDto) throws Exception{
 
+        System.out.println("Destination : " + errorDto.destination());
         messagingTemplate.convertAndSend(errorDto.destination(), mapper.writeValueAsString(errorDto));
 
         //TODO uncomment it after create users

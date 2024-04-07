@@ -41,6 +41,7 @@ public class WebSocketEventListener {
         }
 
 
+        // authorized user
         if (!userToken.split("-")[0].equals("guest") && !userToken.isEmpty()) {
 
             if (jwtService.validateToken(userToken)) {
@@ -55,10 +56,10 @@ public class WebSocketEventListener {
                 System.out.println("Invalid token");
                 throw new RuntimeException("Invalid token");
             }
-        } else {
-            String username = String.valueOf(jwtService.extractAllClaims(userToken));
-            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>());
-            System.out.println("Guest connected : " + username);
+        } else { // guest
+//            String username = String.valueOf(jwtService.extractAllClaims(userToken));
+            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(null, new ArrayList<>());
+            System.out.println("Guest connected");
         }
 
 
