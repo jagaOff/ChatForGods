@@ -1,3 +1,4 @@
+<!--
 <div>
   <button (click)="connect()">
     Connect
@@ -11,7 +12,43 @@
 
 <br>
 <div>
-  <input type="text" [(ngModel)]="name" placeholder="Enter name" [disabled]="isNameDisabled">
+&lt;!&ndash;  <input type="text" [(ngModel)]="name" placeholder="Enter name" [disabled]="isNameDisabled">&ndash;&gt;
   <input type="text" [(ngModel)]="message" placeholder="Enter message">
   <button (click)="sendMessage()">Send</button>
+
+
 </div>
+
+<div *ngFor="let message of messages">
+  {{message.name}} : {{message.message}} - <span>{{message.date}}:{{message.time}}</span>
+</div>
+
+<div>
+  <button (click)="changeTheme()">
+    Change Theme
+  </button>
+
+  <button (click)="addToast()">
+    Add toast
+  </button>
+</div>
+-->
+
+<main class="h-screen flex">
+
+  <div class="left-column h-full border-r border-secondary bg-background">
+    <app-left-index></app-left-index>
+  </div>
+
+  <div class="middle-column h-full w-full flex">
+    <!--    <div class="resize-handle h-full w-[2px]"></div>-->
+
+    middle
+
+  </div>
+
+  <!--  TO FUTURE-->
+  <!-- <div class="right-column-main bg-gray-500  hidden">
+     right
+   </div>-->
+</main>

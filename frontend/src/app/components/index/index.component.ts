@@ -2,51 +2,67 @@ import {Component, OnInit} from '@angular/core';
 import {WebsocketService} from "../../services/websocket.service";
 import {FormsModule} from "@angular/forms";
 import {ChatTemplate} from "../../sendTemplates/ChatTemplate";
+import {UserConfig} from "../../config/User.config";
+import {Router} from "@angular/router";
+import {NgForOf} from "@angular/common";
+import {ToastService} from '../../services/toast.service';
+import {LeftIndexComponent} from "../left-index/left-index.component";
 
 @Component({
   selector: 'app-index',
   standalone: true,
   imports: [
-    FormsModule
+    FormsModule,
+    NgForOf,
+    LeftIndexComponent,
   ],
   templateUrl: './index.component.html',
   styleUrl: './index.component.scss'
 })
 export class IndexComponent implements OnInit {
-  message!: string;
-  name!: string;
-  isNameDisabled = false;
+  messages: ChatTemplate[] = [];
 
-  constructor(protected webSocketService: WebsocketService) {
-    this.connect();
+  constructor(protected webSocketService: WebsocketService,
+              private userConfig: UserConfig,
+              private router: Router,
+              private toast: ToastService) {
+
+    if (this.userConfig.getUserConfig().user_token == "") {
+      this.router.navigate(['auth']);
+    }
+
+    this.webSocketService.connectToWebSocket().then(() => {
+      this.subscribe();
+      this.webSocketService.sendMessage(`/app/auth/JWT`, this.userConfig.getUserConfig().user_token);
+    });
   }
 
   ngOnInit() {
+
+
   }
 
-  sendMessage() {
-    this.webSocketService.sendMessage(
-      '/app/chat.sendMessage',
-      new ChatTemplate(this.name, this.message,
-        new Date().toLocaleDateString(), new Date().toLocaleTimeString()));
-    this.message = '';
-    this.isNameDisabled = true;
-  }
 
   subscribe() {
-    this.webSocketService.subscribe('/topic/public', (message: any) => {
-      console.log(message.body);
+    this.webSocketService.subscribe(`/topic/${this.userConfig.getUserConfig().user_token}`, (message: any) => {
+      console.log("message: " + JSON.stringify(message));
+      if (message.status >= 200 && message.status <= 300) {
+        this.toast.show("success", message.message, {
+          timeOut: 3000,
+          closeButton: true
+        });
+        this.webSocketService.closeConnection();
+      }
+      if (message.status >= 400 && message.status <= 500) {
+        this.toast.show("error", message.message, {
+          timeOut: 3000,
+          closeButton: true
+        });
+        this.webSocketService.closeConnection()
+        this.router.navigate(['auth']);
+      }
     });
   }
 
-  async connect() {
-    this.webSocketService.connectToWebSocket().then(() => {
-      this.subscribe();
-    });
 
-  }
-
-  disconnect() {
-    this.webSocketService.closeConnection();
-  }
 }

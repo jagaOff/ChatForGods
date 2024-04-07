@@ -1,0 +1,27 @@
+.left-column {
+  min-width: 26.5rem;
+  max-width: 26.5rem;
+}
+
+
+
+//@media (max-width: 926px) {
+//  .left-column-main{
+//    min-width: 26.5rem;
+//  }
+//}
+
+@media (max-width: 600px) {
+  .left-column {
+    max-width: 100vw;
+    min-width: 100vw;
+  }
+
+  .middle-column {
+    display: none;
+  }
+}
+
+.resize-handle {
+  cursor: ew-resize;
+}

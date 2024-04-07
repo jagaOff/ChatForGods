@@ -1,3 +1,47 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.toast-container{
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+}
+
+.toast {
+  //position: fixed;
+  z-index: 9999;
+  margin-bottom: 10px;
+  align-items: flex-end;
+}
+
+.toast-top-right {
+  top: 1rem;
+  right: 1rem;
+}
+
+.toast-top-left {
+  top: 1rem;
+  left: 1rem;
+}
+
+.toast-bottom-right {
+  bottom: 1rem;
+  right: 1rem;
+}
+
+.toast-bottom-left {
+  bottom: 1rem;
+  left: 1rem;
+}
+
+.toast-message {
+  word-wrap: break-word;
+}
+
+.toast-progress .toast-message {
+  max-width: 200px;
+}
+
+
+
