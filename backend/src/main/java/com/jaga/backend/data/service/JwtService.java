@@ -1,5 +1,6 @@
 package com.jaga.backend.data.service;
 
+import com.jaga.backend.data.entity.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -24,6 +25,7 @@ import java.security.PublicKey;
 import java.security.Security;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Service
@@ -58,7 +60,9 @@ public class JwtService {
         }
     }*/
 
-    public String createToken(String username /*boolean isAdmin*/) {
+    //TODO create claims (username,  password, isAdmin)
+
+    public String createToken(User user /*boolean isAdmin*/) {
 
         long nowMillis = System.currentTimeMillis();
         Date now = new Date(nowMillis);
@@ -66,9 +70,13 @@ public class JwtService {
 
 //        SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
+
         return Jwts.builder()
-                .subject(username)
-//                .claim("isAdmin", isAdmin)
+//                .id(UUID.fromString(user.getUsername()).toString())
+                .subject(user.getUsername())
+                .claim("username", user.getUsername())
+                .claim("password", user.getPassword())
+                .claim("isAdmin", user.isAdmin())
                 .issuedAt(now)
                 .expiration(exp)
                 .signWith(getSigningKey())
