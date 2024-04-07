@@ -34,46 +34,56 @@ export class WebsocketService implements OnDestroy {
       disconnect: this.closeConnection.bind(this),
       setAttempt: this.setAttempt.bind(this),
     };
-    /*this.connection = Stomp.client(`ws://${this.wsUrl}`);
-    this.connection.connect({}, () => {
-    });*/
   }
 
   ngOnDestroy() {
+    this.unsubscribe();
+  }
+
+  unsubscribe() {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
   }
 
-  async connectToWebSocket() {
-    this.connection = Stomp.client(`ws://${this.wsUrl}`);
-    this.connection.connect(this.headers, () => {
+  async connectToWebSocket(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.connection = Stomp.client(`ws://${this.wsUrl}`);
+      this.connection.connect(this.headers, () => {
+      });
 
+      this.connection.onConnect = () => {
+        this.connectionStatus = 'Connected';
+        this.toast.show("info", 'Connected to websocket', {
+          closeButton: true,
+          timeOut: 3000,
+        });
+        resolve();
+      }
+
+      this.connection.onDisconnect = () => {
+        console.log('Disconnected from websocket');
+      }
+
+      this.connection.onStompError = () => {
+        console.log('Error from websocket');
+      }
+
+      this.connection.onWebSocketClose = () => {
+        // console.log('Websocket closed');
+      }
+
+      this.connection.onWebSocketError = () => {
+        this.connectionStatus = 'Could not connect to server';
+        this.toast.show("error", 'Could not connect to server', {
+          closeButton: true,
+          timeOut: 3000,
+        });
+        reject();
+      }
     });
 
 
-
-    if (this.connection?.connected) {
-      this.connectionAttempts = 0;
-      this.connectionStatus = 'Connected';
-      this.closeReconnectNotification();
-      this.toast.show("success", 'Connected to server', {
-        closeButton: true,
-        timeOut: 3000,
-      });
-    }
-
-    /*else {
-      if (!this.closeReconnect) {
-        this.closeReconnectNotification()
-        this.toast.show("info", "Trying connect to server", {
-          isClosable: false,
-          customIcon: '<img src="assets/img/svg/loading.svg" alt="Star Icon" />',
-          timeOut: 3000
-        });
-        // this.reconnect();
-      }
-    }*/
   }
 
   setAttempt(attempt: number) {
@@ -87,25 +97,28 @@ export class WebsocketService implements OnDestroy {
         closeButton: true,
         timeOut: 3000,
       });
+      if (this.connection) {
+        this.connection.reconnectDelay = 5000;
+      }
       // this.reconnect();
     });
   }
 
-  sendMessage(destination: string, template: SendTemplate) {
-    if (this.connection && this.connection.connected) {
-      console.log('Sending message');
-      this.connection.send(destination, {}, JSON.stringify(template));
-    } else {
-      console.error('Server is not connected');
+  sendMessage(destination: string, template?: SendTemplate, message?: string) {
+    if (this.connection?.connected) {
+      if (message) {
+        this.connection.send(destination, {}, message);
+      } else {
+        this.connection.send(destination, {}, JSON.stringify(template));
+      }
+
     }
   }
 
   public subscribe(destination: string, callback: Function): void {
-    if (this.connection) {
-      this.connection.connect({}, () => {
-        this.subscription = this.connection!.subscribe(destination, message => {
-          callback(JSON.parse(message.body));
-        });
+    if (this.connection?.connected) {
+      this.subscription = this.connection!.subscribe(destination, message => {
+        callback(JSON.parse(message.body));
       });
     }
   }
@@ -118,16 +131,10 @@ export class WebsocketService implements OnDestroy {
     }
   }
 
-  /*subscribe(callback: Function) {
-    this.stompClient.subscribe('/topic/public', (message: any) => {
-      // callback(JSON.parse(message.body));
-    });
-  }*/
-
   private reconnect() {
     this.connectionAttempts++;
 
-    if(this.connectionStatus === 'Connected'){
+    if (this.connectionStatus === 'Connected') {
       this.closeReconnect = true;
       return;
     }
