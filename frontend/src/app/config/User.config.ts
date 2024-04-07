@@ -50,12 +50,17 @@ export class UserConfig {
 
   updateUserConfig(config: any) {
     localStorage.removeItem('user_config')
-    if (config.user_token) {
+    if (config.user_token !== '') {
       config.user_token = this.securityService.encryptToken(config.user_token);
     }
     localStorage.setItem('user_config', JSON.stringify(config));
   }
 
 
-
+  signOut() {
+    // remove user_token from localStorage
+    let config = this.getUserConfig();
+    config.user_token = '';
+    this.updateUserConfig(config);
+  }
 }
