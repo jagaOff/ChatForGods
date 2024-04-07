@@ -16,23 +16,21 @@ export class WebsocketService implements OnDestroy {
   private wsUrl = WebConfig.websocketUrl;
   private connection: CompatClient | undefined = undefined;
   private subscription: StompSubscription | undefined;
-  private timeOut = 5000;
-  private connectionAttempts = 0;
-  private maxConnectionAttempts = 2;
-  private closeReconnect = false;
+  token !:string;
 
   constructor(private userConfig: UserConfig, private toast: ToastService) {
 
     if (this.userConfig.getUserConfig().user_token == "") {
-      this.headers['user_token'] = "guest-" + Math.random().toString(36).substr(2, 9);
+      this.token = "guest-" + Math.random().toString(36).substr(2, 9);
     } else {
-      this.headers['user_token'] = this.userConfig.getUserConfig().user_token;
+      this.token = this.userConfig.getUserConfig().user_token;
     }
+
+    this.headers['user_token'] = this.token;
 
     (window as any).web = {
       connect: this.connectToWebSocket.bind(this),
       disconnect: this.closeConnection.bind(this),
-      setAttempt: this.setAttempt.bind(this),
     };
   }
 
@@ -54,10 +52,6 @@ export class WebsocketService implements OnDestroy {
 
       this.connection.onConnect = () => {
         this.connectionStatus = 'Connected';
-        this.toast.show("info", 'Connected to websocket', {
-          closeButton: true,
-          timeOut: 3000,
-        });
         resolve();
       }
 
@@ -84,10 +78,6 @@ export class WebsocketService implements OnDestroy {
     });
 
 
-  }
-
-  setAttempt(attempt: number) {
-    this.connectionAttempts = attempt;
   }
 
   closeConnection() {
@@ -117,39 +107,8 @@ export class WebsocketService implements OnDestroy {
 
   public subscribe(destination: string, callback: Function): void {
     if (this.connection?.connected) {
-      this.subscription = this.connection!.subscribe(destination, message => {
+      this.subscription = this.connection.subscribe(destination, message => {
         callback(JSON.parse(message.body));
-      });
-    }
-  }
-
-  private closeReconnectNotification() {
-    const element = document.getElementById('toast-info');
-    if (element) {
-      console.log('Closing element')
-      this.toast.closeElement(element)
-    }
-  }
-
-  private reconnect() {
-    this.connectionAttempts++;
-
-    if (this.connectionStatus === 'Connected') {
-      this.closeReconnect = true;
-      return;
-    }
-
-
-    if (this.connectionAttempts <= this.maxConnectionAttempts) {
-      console.log("trying to connect to server: " + this.connectionAttempts);
-      setTimeout(() => this.connectToWebSocket(), this.timeOut);
-    } else {
-      this.closeReconnectNotification()
-      this.closeReconnect = true;
-      this.connectionStatus = 'Could not connect to server';
-      this.toast.show("error", 'Could not connect to server', {
-        closeButton: true,
-        timeOut: 3000,
       });
     }
   }

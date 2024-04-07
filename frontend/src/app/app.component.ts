@@ -25,6 +25,12 @@ export class AppComponent {
       userConfig.createUserConfig();
     }
 
+   /* if(userConfig.getUserConfig().user_token === "") {
+      let config = userConfig.getUserConfig();
+      config.user_token = "guest-" + Math.random().toString(36).substr(2, 9);
+      userConfig.updateUserConfig(config);
+    }
+*/
     themeConfig.applyTheme();
   }
 }

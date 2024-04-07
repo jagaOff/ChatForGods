@@ -9,7 +9,12 @@ export class ThemeConfig {
   constructor(private userConfig: UserConfig) {
     (window as any).theme = {
       devToken: () => this.setDevToken(),
+      getConfig: () => this.getUserConfig(),
     };
+  }
+
+  private getUserConfig() {
+    return this.userConfig.getUserConfig();
   }
 
   async applyTheme() {

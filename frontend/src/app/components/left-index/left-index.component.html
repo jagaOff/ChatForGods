@@ -1,5 +1,5 @@
 <div class="h-full min-w-full">
-  <div class="header flex px-4 py-1 space-x-6 items-center bg-transparent shadow-2xl">
+  <div class="header flex px-4 py-1 space-x-6 items-center bg-transparent shadow-sm shadow-text">
     <div class="dropdown flex items-center">
       <button data-dropdown-toggle="dropdownHover"
               data-dropdown-trigger="click" type="button">
@@ -10,13 +10,24 @@
     </div>
     <div class="search flex-grow items-center">
       <input
+        (input)="onInputChange($event)"
         class="w-full rounded-2xl bg-secondary outline-none border-2 border-transparent placeholder-text text-text focus:ring-0 focus:border-primary"
         placeholder="Search" type="text">
     </div>
   </div>
 
   <div class="chats">
-
+    @for(chat of chats; track chat){
+    <div class="chat flex items-center px-4 py-2 space-x-4 hover:bg-gray-600">
+      <!--<div class="avatar">
+        <img class="h-12 w-12 rounded-full" src="{{chat.avatar}}" alt="">
+      </div>-->
+      <div class="info flex-grow">
+<!--        <div class="name text-text font-medium">{{chat.name}}</div>-->
+        <div class="message text-text text-sm">{{chat}}</div>
+      </div>
+    </div>
+    }
 
   </div>
 
@@ -27,7 +38,7 @@
 <div
   class="z-10 hidden bg-transparent bg-opacity-10 divide-y divide-gray-100 select-none rounded-lg shadow border border-secondary w-50"
   id="dropdownHover">
-  <ul class="py-2 text-sm text-text">
+  <ul class="p-2 text-sm text-text">
     <li>
       <div class="flex p-2 rounded hover:bg-gray-600">
         <label class="inline-flex items-center w-full cursor-pointer">

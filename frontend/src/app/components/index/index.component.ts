@@ -51,14 +51,15 @@ export class IndexComponent implements OnInit {
           timeOut: 3000,
           closeButton: true
         });
+        this.webSocketService.closeConnection();
       }
       if (message.status >= 400 && message.status <= 500) {
-        let config = this.userConfig.getUserConfig()
-        config.user_token = message.message;
-        this.userConfig.updateUserConfig(config);
-        // reopen subscription
-        this.webSocketService.unsubscribe();
-        this.subscribe();
+        this.toast.show("error", message.message, {
+          timeOut: 3000,
+          closeButton: true
+        });
+        this.webSocketService.closeConnection()
+        this.router.navigate(['auth']);
       }
     });
   }

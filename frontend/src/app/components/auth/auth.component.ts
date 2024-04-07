@@ -36,7 +36,7 @@ export class AuthComponent {
   }
 
   subscribe(){
-    this.webSocketService.subscribe('/topic/auth', (message: any) => {
+    this.webSocketService.subscribe('/topic/auth/' + this.webSocketService.token, (message: any) => {
 
       if(message.status >= 200 && message.status <= 300){
         this.webSocketService.headers['user_token'] = message.token;
@@ -66,6 +66,7 @@ export class AuthComponent {
   }
 
   login() {
+    console.log("Web Token: " + this.webSocketService.token)
 
     if(this.username === '' || this.password === ''){
       this.toast.show("error", "Username or password is empty");
@@ -75,7 +76,7 @@ export class AuthComponent {
 
     this.webSocketService.sendMessage(
       '/app/auth/login',
-      new AuthTemplate(this.username, this.password));
+      new AuthTemplate(this.username, this.password, this.webSocketService.token));
   }
 
   register() {
@@ -86,7 +87,7 @@ export class AuthComponent {
 
     this.webSocketService.sendMessage(
       '/app/auth/register',
-      new AuthTemplate(this.username, this.password));
+      new AuthTemplate(this.username, this.password, this.webSocketService.token));
   }
 
   switchMode() {
